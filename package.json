@@ -2,7 +2,7 @@
   "name": "roster-restaurants",
   "version": "1.0.0",
   "description": "Roster backend test",
-  "main": "index.js",
+  "main": "server/index.js",
   "scripts": {
     "start": "node server",
     "build": "cd client/ && npm install && npm run build",
