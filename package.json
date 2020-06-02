@@ -1,0 +1,27 @@
+{
+  "name": "roster-restaurants",
+  "version": "1.0.0",
+  "description": "Roster backend test",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/tymondragon/roster-restaurants.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/tymondragon/roster-restaurants/issues"
+  },
+  "homepage": "https://github.com/tymondragon/roster-restaurants#readme",
+  "dependencies": {
+    "body-parser": "^1.19.0",
+    "dotenv": "^8.2.0",
+    "express": "^4.17.1",
+    "knex": "^0.21.1",
+    "pg": "^8.2.1"
+  }
+}
