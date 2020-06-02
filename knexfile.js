@@ -12,16 +12,14 @@ module.exports = {
 
   development: {
     client: 'postgresql',
-    connection: process.env.DATABASE,
+    connection: process.env.DATABASE_URL,
     migrations
   },
-
-  staging: {
+  test: {
     client: 'postgresql',
     connection: process.env.DATABASE_URL,
     migrations
   },
-
   production: {
     client: 'postgresql',
     connection: process.env.DATABASE_URL,
