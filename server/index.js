@@ -13,13 +13,17 @@ app.use(express.static(path.resolve(__dirname, '../client/build')));
 
 //Routes
 app.get('/api', (req, res) => res.send("yo!"));
-app.get('/restaurants', (req, res, next) => {
+app.get('/restaurants', async (req, res, next) => {
+  const restaurants = await db('restaurants').select('*');
+  
   res.json({
-    restaurants: [
-    {id: 1, placeId: '123ABC'},
-    {id: 2, placeId: '456DEF'},
-    {id: 3, placeId: '789GHI'},
-  ]})
+    restaurants: restaurants.map(restaurant => {
+      const {id, place_id} = restaurant
+      return {
+        id: id,
+        placeId: place_id
+      }
+    })})
 });
 app.get('/restaurants/:restaurantId', async (req, res, next) => {
   const [restaurant] = await db('restaurants').select('name').where('id', req.params.restaurantId);
