@@ -12,6 +12,14 @@ app.use(express.static(path.resolve(__dirname, '../client/build')));
 
 //Routes
 app.get('/api', (req, res) => res.send("yo!"));
+app.get('/restaurants', (req, res) => {
+  res.json({
+    restaurants: [
+    {id: 1, placeId: '123ABC'},
+    {id: 2, placeId: '456DEF'},
+    {id: 3, placeId: '789GHI'},
+  ]})
+});
 
 app.use((req, res, next) => {
   res.status(404).json({ error: { message: '404 not found' } })

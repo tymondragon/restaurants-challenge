@@ -1,23 +1,40 @@
-import React from 'react';
+import React, { useState, useCallback, useEffect } from 'react';
 import logo from './logo.svg';
 import './App.css';
 
-function App() {
+function App () {
+  const [restaurants, setRestaurants] = useState([]);
+  const [url, setUrl] = useState('/restaurants')
+
+  const fetchRestaurants = useCallback(() => {
+    fetch(url)
+      .then(response => {
+        if (!response.ok) {
+          throw new Error(`status ${response.status}`)
+        }
+        return response.json();
+      })
+      .then(json => {
+        setRestaurants(json.restaurants)
+      })
+  }, [url])
+
+  useEffect(() => {
+    fetchRestaurants()
+  }, [fetchRestaurants])
+
   return (
     <div className="App">
       <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
         <p>
-          Edit <code>src/App.js</code> and save to reload.
+          Roster Restaurants
         </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
+
+        <ul>
+          {restaurants.map((restaurant, i) => {
+            return <li key={restaurant.id}> {restaurant.placeId} </li>
+          })}
+        </ul>
       </header>
     </div>
   );
