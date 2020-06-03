@@ -1,12 +1,35 @@
 .App {
+  display: flex;
+  align-items: center;
   text-align: center;
 }
+/* .App {
+  text-align: center;
+} */
 
 .App-logo {
   height: 40vmin;
   pointer-events: none;
 }
+.column1 {
+  float: left;
+  width: 35%;
+  height: 100%;
+  padding: 10px;
+}
+.column2 {
+  float: left;
+  width: 65%;
+  height: 100%;
+  padding: 10px 50px 10px 10px;
+}
 
+/* Clear floats after the columns */
+.row:after {
+  content: "";
+  display: table;
+  clear: both;
+}
 @media (prefers-reduced-motion: no-preference) {
   .App-logo {
     animation: App-logo-spin infinite 20s linear;
