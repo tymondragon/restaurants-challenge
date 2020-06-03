@@ -16,28 +16,26 @@ const restaurantFields = {
 const fields = Object.values(restaurantFields);
 
 exports.list = async (req, res, next) => {
-  const restaurants = await db('restaurants').select('*');
+  try {
+    let restaurants = await db('restaurants').select('id', 'place_id');
 
-  const { name, rating, hoursOfOperation, openNow, ...rest } = restaurantFields;
-  const listFields = [name, rating, hoursOfOperation, openNow].join(",");
+    const { name, rating, hoursOfOperation, openNow, ...rest } = restaurantFields;
+    const listFields = [name, rating, hoursOfOperation, openNow];
 
-  for (const restaurant of restaurants) {
-    const json = await fetchApi(listFields, restaurant.place_id)
-    await console.log(json.result)
-  }
-
-  // const jsonResult = await fetchApi(listFields, restaurants[0].place_id)
-  // await console.log(jsonResult, "result api")
-
-  res.json({
-    restaurants: restaurants.map(restaurant => {
-      const { id, place_id } = restaurant
-      return {
-        id: id,
-        placeId: place_id
+    let serializedRestaurants = []
+    for (let restaurant of restaurants) {
+      const json = await fetchApi(listFields.join(","), restaurant.place_id)
+      restaurant = {
+        ...restaurant,
+        ...json.result
       }
-    })
-  })
+      serializedRestaurants = [...serializedRestaurants, exports.serializeRestaurant(restaurant)]
+    }
+
+    res.json({ restaurants: serializedRestaurants })
+  } catch (e) {
+    console.log(e)
+  }
 }
 
 exports.getRestaurantById = async (req, res, next) => {
@@ -54,4 +52,26 @@ async function fetchApi (fields, place_id) {
 
 function urlBuilder (fields, place_id) {
   return `${API_URL}?place_id=${place_id}&fields=${fields}&key=${API_KEY}`
+}
+
+exports.serializeRestaurant = (
+  {
+    id,
+    name,
+    opening_hours,
+    rating,
+    formatted_address,
+    formatted_phone_number,
+    website
+  }) => {
+  return {
+    id: id ? id : null,
+    name: name ? name : null,
+    openNow: opening_hours ? opening_hours["open_now"] : null,
+    hoursOfOperation: opening_hours ? opening_hours["weekday_text"] : null,
+    rating: rating ? rating : null,
+    address: formatted_address ? formatted_address : null,
+    phoneNumber: formatted_phone_number ? formatted_phone_number : null,
+    website: website ? website : null
+  }
 }

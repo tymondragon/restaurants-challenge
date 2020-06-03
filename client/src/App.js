@@ -11,6 +11,7 @@ function App () {
       throw new Error(`status ${response.status}`)
     } else {
       const data = await response.json()
+      await console.log(data.restaurants)
       setRestaurants(data.restaurants)
     }
   }
@@ -29,6 +30,7 @@ function App () {
 
   useEffect(() => {
     fetchRestaurants()
+    console.log(restaurants, "useEffect")
   }, [])
 
   return (
