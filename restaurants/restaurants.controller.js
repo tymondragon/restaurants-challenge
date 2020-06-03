@@ -24,7 +24,7 @@ exports.list = async (req, res, next) => {
 
     let serializedRestaurants = []
     for (let restaurant of restaurants) {
-      const json = await fetchApi(listFields.join(","), restaurant.place_id)
+      const json = await exports.fetchApi(listFields.join(","), restaurant.place_id)
       restaurant = {
         ...restaurant,
         ...json.result
@@ -44,14 +44,14 @@ exports.getRestaurantById = async (req, res, next) => {
   res.json({ ...restaurant })
 }
 
-async function fetchApi (fields, place_id) {
-  const url = urlBuilder(fields, place_id);
+exports.fetchApi = async (fields, place_id) => {
+  const url = exports.urlBuilder(fields, place_id);
   const response = await fetch(url);
   return await response.json();
 }
 
-function urlBuilder (fields, place_id) {
-  return `${API_URL}?place_id=${place_id}&fields=${fields}&key=${API_KEY}`
+exports.urlBuilder = (fields, place_id) => {
+  return `${API_URL}/?place_id=${place_id}&fields=${fields}&key=${API_KEY}`
 }
 
 exports.serializeRestaurant = (
