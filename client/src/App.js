@@ -53,8 +53,10 @@ function App () {
         <CircularProgress /> :
         <>
           <div className="column1">
-            <h2>Column 1</h2>
-            <p>Some text..</p>
+            <Box display="flex" flexDirection="column" alignItems="flex-start">
+              <h2>Roster</h2>
+              <p>Lunch Finder</p>
+            </Box>
           </div>
           <div className="column2" style={{ backgroundColor: '#bbb' }}>
             <Box display="flex" flexDirection="row" pl={5}>
