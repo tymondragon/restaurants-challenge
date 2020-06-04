@@ -3,7 +3,6 @@ import './App.css';
 import { makeStyles } from '@material-ui/core/styles';
 import {
   Box,
-  Button,
   Card,
   CardActions,
   CardContent,
@@ -13,17 +12,20 @@ import {
   ListItemText,
   Typography
 } from '@material-ui/core';
+import { alignItems, alignSelf, flexbox, flexDirection, flexGrow, height, justifyContent, sizing, minHeight } from '@material-ui/system';
 import FiberManualRecordIcon from '@material-ui/icons/FiberManualRecord';
 
 const useStyles = makeStyles({
   root: {
+    margin: 50,
     minWidth: 275,
   },
   title: {
     fontSize: 14,
   },
-  pos: {
-    marginBottom: 12,
+  ul: {
+    listStyleType: 'none',
+    paddingLeft: 0
   },
   open: {
     color: 'green',
@@ -41,8 +43,8 @@ function Restaurant ({ restaurant, fetchRestaurant } ) {
   return (
     <Card className={classes.root} variant="outlined" onClick={(event) => fetchRestaurant(restaurant, event)} >
       <CardContent>
-        <Box display="flex" flexDirection="row">
-          <Box display="flex" flexDirection="column" width="33%">
+        <Box p={5} display="flex" flexDirection="row">
+          <Box display="flex" alignSelf="center" flexDirection="column" width="33%">
             <Typography variant="h6" component="h2">
               {restaurant.name}
             </Typography>
@@ -50,10 +52,10 @@ function Restaurant ({ restaurant, fetchRestaurant } ) {
               Rating: {restaurant.rating}
             </Typography>
           </Box>
-          <Box display="flex" flexDirection="column" width="33%">
+          <Box display="flex" justifyContent="center" width="33%">
             {hours ? <ListTimes hours={hours}/> : null}
           </Box>
-          <Box width="33%">
+          <Box width="33%" alignSelf="center" display="flex" justifyContent="center">
             {restaurant.openNow ? <Box display="flex" flexDirection="row">
               <FiberManualRecordIcon className={classes.open} />
               <div className={classes.space}>Now Open!</div>
@@ -86,15 +88,16 @@ function Restaurant ({ restaurant, fetchRestaurant } ) {
 }
 
 function ListTimes ({ hours }) {
+  const classes = useStyles();
   return (
-      <List component="nav" aria-label="contacts">
+    <ul className={classes.ul}>
         {hours.map((time, i) => {
           return (
-            <ListItem key={i}>
-              <ListItemText primary={time} />
-            </ListItem>)
+            <li key={i}>
+              <Box display="flex" justifyContent="flex-start" >{time}</Box>
+            </li>)
         })}
-      </List>
+      </ul>
   )
 }
 

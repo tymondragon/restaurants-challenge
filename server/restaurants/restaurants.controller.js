@@ -31,7 +31,7 @@ exports.list = async (req, res, next) => {
       }
       serializedRestaurants = [...serializedRestaurants, exports.serializeRestaurant(restaurant)]
     }
-
+    serializedRestaurants.sort((a,b) => b.rating - a.rating)
     res.json({ restaurants: serializedRestaurants })
   } catch (e) {
     next(e)
@@ -42,8 +42,7 @@ exports.getRestaurantById = async (req, res, next) => {
   try {
     let [restaurant] = await db('restaurants').select('id','place_id').where('id', req.params.restaurantId);
     // await console.log(restaurant)
-    const listFields = Object.values(restaurantFields);
-    const json = await exports.fetchApi(listFields.join(","), restaurant.place_id)
+    const json = await exports.fetchApi(fields.join(","), restaurant.place_id)
     restaurant = {
       ...restaurant,
       ...json.result
