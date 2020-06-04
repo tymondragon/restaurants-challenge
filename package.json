@@ -6,7 +6,7 @@
   "scripts": {
     "start": "node server",
     "build": "cd client/ && npm install && npm run build",
-    "test": "NODE_ENV=test mocha",
+    "test": "NODE_ENV=test mocha --exit",
     "migrate:make": "knex migrate:make",
     "migrate:latest": "knex migrate:latest",
     "migrate:rollback": "knex migrate:rollback",

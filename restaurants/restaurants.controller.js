@@ -31,7 +31,7 @@ exports.list = async (req, res, next) => {
       }
       serializedRestaurants = [...serializedRestaurants, exports.serializeRestaurant(restaurant)]
     }
-
+console.log(serializedRestaurants, "serialiizes")
     res.json({ restaurants: serializedRestaurants })
   } catch (e) {
     console.log(e)
@@ -51,7 +51,7 @@ exports.fetchApi = async (fields, place_id) => {
 }
 
 exports.urlBuilder = (fields, place_id) => {
-  return `${API_URL}/?place_id=${place_id}&fields=${fields}&key=${API_KEY}`
+  return `${API_URL}/maps/api/place/details/json?place_id=${place_id}&fields=${fields}&key=${API_KEY}`
 }
 
 exports.serializeRestaurant = (
