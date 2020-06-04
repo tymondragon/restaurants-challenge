@@ -34,14 +34,25 @@ exports.list = async (req, res, next) => {
 
     res.json({ restaurants: serializedRestaurants })
   } catch (e) {
-    console.log(e)
+    next(e)
   }
 }
 
 exports.getRestaurantById = async (req, res, next) => {
-  const [restaurant] = await db('restaurants').select('name').where('id', req.params.restaurantId);
-  // await console.log(restaurant)
-  res.json({ ...restaurant })
+  try {
+    let [restaurant] = await db('restaurants').select('id','place_id').where('id', req.params.restaurantId);
+    // await console.log(restaurant)
+    const listFields = Object.values(restaurantFields);
+    const json = await exports.fetchApi(listFields.join(","), restaurant.place_id)
+    restaurant = {
+      ...restaurant,
+      ...json.result
+    }
+    res.json(exports.serializeRestaurant(restaurant))
+  } catch (e) {
+    console.log(e)
+    next(e)
+  }
 }
 
 exports.fetchApi = async (fields, place_id) => {

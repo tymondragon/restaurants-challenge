@@ -28,6 +28,16 @@ const mockResponse = () => {
 }
 
 describe('restaurant endpoints', () => {
+  beforeEach(() => db('restaurants').del());
+  beforeEach(async () => {
+    await db('restaurants').insert({
+      id: 1,
+      name: 'fancy restaurant',
+      place_id: 'id1'
+    }).returning('*');
+    req = mockRequest('/restaurants');
+    res = mockResponse();
+  })
   describe(".urlBuilder", () => {
     const API_key = process.env.GOOGLE_API_KEY
     it('builds the correct url string', async () => {
@@ -54,16 +64,6 @@ describe('restaurant endpoints', () => {
   });
 
   describe("list", () => {
-    beforeEach(() => db('restaurants').del());
-    beforeEach(async () => {
-      await db('restaurants').insert({
-        id: 1,
-        name: 'fancy restaurant',
-        place_id: 'id1'
-      })
-      req = mockRequest('/restaurants');
-      res = mockResponse();
-    })
     let restaurantsDetails;
     beforeEach(() => restaurantsDetails = sinon.stub(endpoints, "fetchApi"))
     afterEach(() => restaurantsDetails.restore())
@@ -108,6 +108,56 @@ describe('restaurant endpoints', () => {
               website: null
             }
           ]
+        })
+      )
+    })
+  })
+
+  describe("getRestaurantById", () => {
+    let restaurantsDetails;
+    beforeEach(() => restaurantsDetails = sinon.stub(endpoints, "fetchApi"))
+    afterEach(() => restaurantsDetails.restore())
+    it('returns a serialized response', async () => {
+      req.params = {
+        restaurantId: 1
+      };
+      const serverResponse = {
+        "result": {
+          "name": "Fancy Restaurant",
+          "opening_hours": {
+            "open_now": true,
+            "weekday_text": [
+              "Monday: Closed",
+              "Tuesday: 11:00 AM – 7:00 PM",
+              "Wednesday: 11:00 AM – 7:00 PM"
+            ]
+          },
+          "rating": 4.8
+        },
+      }
+
+      const fakeInternet = nock("http://test.host")
+        .log(console.log)
+        .get('/maps/api/place/details/json')
+        .query(true)
+        .reply(200, serverResponse);
+      restaurantsDetails.returns(serverResponse);
+
+      await endpoints.getRestaurantById(req, res)
+      expect(res.json).to.have.been.calledWith(
+        sinon.match({
+              id: 1,
+              name: 'Fancy Restaurant',
+              address: null,
+              phoneNumber: null,
+              openNow: true,
+              hoursOfOperation: [
+                'Monday: Closed',
+                'Tuesday: 11:00 AM – 7:00 PM',
+                'Wednesday: 11:00 AM – 7:00 PM'
+              ],
+              rating: 4.8,
+              website: null
         })
       )
     })
