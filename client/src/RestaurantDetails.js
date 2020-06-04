@@ -41,15 +41,15 @@ function RestaurantDetails ({ restaurant }) {
             Rating: {restaurant.rating}
           </Typography>
         </Box>
-        {restaurant.openNow ?
-          <Box display="flex" flexDirection="row" alignItems="center" width="20%">
+        {true === true?
+          <Box display="flex" alignItems="center" width="30%">
             <FiberManualRecordIcon className={classes.open} />
-            <div className={classes.space}>Now Open!</div>
+            <Typography variant="h6" fontWeight="fontWeightBold" className={classes.space}>Open For Luch!</Typography>
           </Box>
           :
-          <Box display="flex" flexDirection="row" alignItems="center" width="20%">
+          <Box display="flex" alignItems="center" width="30%">
             <FiberManualRecordIcon className={classes.closed} />
-            <div className={classes.space}>Closed</div>
+            <Typography variant="h6" fontWeight="fontWeightBold" className={classes.space}>Closed</Typography>
           </Box>}
       </Box>
       <Divider />

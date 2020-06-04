@@ -39,7 +39,7 @@ function Restaurant ({ restaurant, fetchRestaurant } ) {
       <CardContent>
         <Box p={5} display="flex" flexDirection="row">
           <Box display="flex" alignSelf="center" flexDirection="column" width="33%">
-            <Typography variant="h6" component="h2">
+            <Typography variant="h5" component="h2">
               {restaurant.name}
             </Typography>
             <Typography variant="subtitle1" component="h2">
@@ -51,13 +51,14 @@ function Restaurant ({ restaurant, fetchRestaurant } ) {
           </Box>
           <Box width="33%" alignSelf="center" display="flex" justifyContent="center">
             {restaurant.openNow ? <Box display="flex" flexDirection="row">
-              <FiberManualRecordIcon className={classes.open} />
-              <div className={classes.space}>Now Open!</div>
+              <FiberManualRecordIcon className={classes.open}/>
+              <Typography variant="h6" fontWeight="fontWeightBold">Open For Luch!</Typography>
+
             </Box>
            :
               <Box display="flex" flexDirection="row">
-                <FiberManualRecordIcon className={classes.closed} />
-                <div className={classes.space}>Closed</div>
+                <FiberManualRecordIcon className={classes.closed}/>
+                <Typography variant="h6" fontWeight="fontWeightBold">Closed</Typography>
               </Box> }
           </Box>
           {/* <Typography className={classes.title} color="textSecondary" gutterBottom>
