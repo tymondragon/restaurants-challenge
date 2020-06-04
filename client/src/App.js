@@ -1,23 +1,33 @@
 import React, { useState, useEffect } from 'react';
 import './App.css';
-import CircularProgress from '@material-ui/core/CircularProgress';
-import CssBaseline from '@material-ui/core/CssBaseline';
-import Restaurants from './Restaurants'
-import Box from '@material-ui/core/Box';
+import Box from '@material-ui/core/box';
+import { Backdrop, Button, CircularProgress, Divider, Drawer, List, ListItem, ListItemText, Typography }from '@material-ui/core';
+import { makeStyles } from '@material-ui/core/styles';
+import Restaurants from './Restaurants';
+import RestaurantDetails from './RestaurantDetails';
+
+const useStyles = makeStyles((theme) => ({
+  backdrop: {
+    zIndex: theme.zIndex.drawer + 1,
+    color: '#fff',
+  }
+}));
 
 function App () {
   const [restaurants, setRestaurants] = useState([]);
   const [restaurant, setRestaurant] = useState(null);
   const [isFetching, setIsFetching] = useState(false);
   const [message, setMessage] = useState(null);
-
+  const [open, setOpen] = useState(false);
   const url = '/restaurants'
+  const classes = useStyles();
+
   const fetchRestaurants = async () => {
     try {
       const response = await fetch(url)
       if (!response.ok) {
-        throw new Error(`status ${response.status}`)
         setIsFetching(false);
+        throw new Error(`status ${response.status}`)
       } else {
         const data = await response.json()
         setRestaurants(data.restaurants)
@@ -26,7 +36,7 @@ function App () {
     } catch (e) {
       setMessage(`API call failed: ${e}`);
     }
-  }
+  };
 
   const fetchRestaurant = async (r, e) => {
     e.preventDefault();
@@ -36,21 +46,66 @@ function App () {
       throw new Error(`status ${response.status}`)
     } else {
       const data = await response.json()
-      setRestaurant(data)
+      setRestaurant(data);
+      setOpen(true);
     }
-  }
+  };
+
+  // const handleClickOpen = () => {
+  //   setOpen(true);
+  // };
+  const toggleDrawer = (event) => {
+    if (event.type === 'keydown' && (event.key === 'Tab' || event.key === 'Shift')) {
+      return;
+    }
+    setOpen(!open);
+  };
+
+  // const handleClose = () => {
+  //   setRestaurant(null);
+  //   setOpen(false);
+  // };
+
+  const restaurantCard = (restaurant) => (
+    <div
+      className={classes.list}
+      role="presentation"
+      onClick={(event) => toggleDrawer(event)}
+      onKeyDown={(event) => toggleDrawer(event)}
+    >
+      <List>
+        {['Inbox', 'Starred', 'Send email', 'Drafts'].map((text, index) => (
+          <ListItem button key={text}>
+            <ListItemText primary={text} />
+          </ListItem>
+        ))}
+      </List>
+      <Divider />
+      <List>
+        {['All mail', 'Trash', 'Spam'].map((text, index) => (
+          <ListItem button key={text}>
+            {/* <ListItemIcon>{index % 2 === 0 ? <InboxIcon /> : <MailIcon />}</ListItemIcon> */}
+            <ListItemText primary={text} />
+          </ListItem>
+        ))}
+      </List>
+    </div>
+  );
+
+
 
   useEffect(() => {
     setIsFetching(true)
     fetchRestaurants()
-    console.log(restaurants, "useEffect")
   }, [])
 
   return (
 
     <div className="App">
       {isFetching ?
-        <CircularProgress /> :
+        <Backdrop>
+          <CircularProgress /> 
+        </Backdrop>:
         <>
           <div className="column1">
             <Box display="flex" flexDirection="column" alignItems="flex-start">
@@ -62,11 +117,20 @@ function App () {
             <Box display="flex" flexDirection="row" pl={5}>
               <h2>Team Favorites</h2>
             </Box>
-            <ul>
-              <Restaurants restaurants={restaurants} />
-            </ul>
+            <List>
+              <Restaurants restaurants={restaurants} fetchRestaurant={fetchRestaurant}/>
+            </List>
           </div>
         </>}
+      {restaurant ?
+        <div>
+            <React.Fragment >
+              <Drawer anchor="right" open={open} onClose={(event) => toggleDrawer(event)}>
+                <RestaurantDetails restaurant={restaurant}/>
+              </Drawer>
+            </React.Fragment>
+        </div> : <></>
+      }
     </div>
   );
 }

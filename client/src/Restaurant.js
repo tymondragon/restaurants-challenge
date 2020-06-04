@@ -7,7 +7,6 @@ import {
   Card,
   CardActions,
   CardContent,
-  Icon,
   List,
   ListItem,
   ListItemIcon,
@@ -19,11 +18,6 @@ import FiberManualRecordIcon from '@material-ui/icons/FiberManualRecord';
 const useStyles = makeStyles({
   root: {
     minWidth: 275,
-  },
-  bullet: {
-    display: 'inline-block',
-    margin: '0 2px',
-    transform: 'scale(0.8)',
   },
   title: {
     fontSize: 14,
@@ -41,12 +35,11 @@ const useStyles = makeStyles({
   }
 });
 
-function Restaurant ({ restaurant }) {
+function Restaurant ({ restaurant, fetchRestaurant } ) {
   const classes = useStyles();
   const hours = restaurant.hoursOfOperation
-  console.log(restaurant)
   return (
-    <Card className={classes.root} variant="outlined">
+    <Card className={classes.root} variant="outlined" onClick={(event) => fetchRestaurant(restaurant, event)} >
       <CardContent>
         <Box display="flex" flexDirection="row">
           <Box display="flex" flexDirection="column" width="33%">
@@ -58,7 +51,7 @@ function Restaurant ({ restaurant }) {
             </Typography>
           </Box>
           <Box display="flex" flexDirection="column" width="33%">
-            {hours ? <ListTimes hours={hours} /> : null}
+            {hours ? <ListTimes hours={hours}/> : null}
           </Box>
           <Box width="33%">
             {restaurant.openNow ? <Box display="flex" flexDirection="row">
@@ -92,12 +85,12 @@ function Restaurant ({ restaurant }) {
   );
 }
 
-function ListTimes ({ hours}) {
+function ListTimes ({ hours }) {
   return (
       <List component="nav" aria-label="contacts">
         {hours.map((time, i) => {
           return (
-            <ListItem key={i} >
+            <ListItem key={i}>
               <ListItemText primary={time} />
             </ListItem>)
         })}
