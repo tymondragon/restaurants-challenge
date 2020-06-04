@@ -13,6 +13,7 @@ const useStyles = makeStyles({
   root: {
     margin: 50,
     minWidth: 275,
+    cursor: "pointer",
   },
   title: {
     fontSize: 14,
@@ -47,7 +48,7 @@ function Restaurant ({ restaurant, fetchRestaurant } ) {
             </Typography>
           </Box>
           <Box display="flex" justifyContent="center" width="33%">
-            {hours ? <ListTimes hours={hours}/> : null}
+            {hours ? <ListTimes hours={hours}/> : <Typography>Visit the website to view hours of operation.</Typography>}
           </Box>
           <Box width="33%" alignSelf="center" display="flex" justifyContent="center">
             {restaurant.openNow ? <Box display="flex" flexDirection="row">

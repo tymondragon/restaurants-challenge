@@ -54,14 +54,19 @@ function RestaurantDetails ({ restaurant }) {
       </Box>
       <Divider />
       <Box mt={5} pl={7} pr={7} pb={5} display="flex" flexDirection="column">
-        <Box>
-          <Typography variant="h5" component="h3">
-            Hours:
+        <Typography variant="h5" component="h3">
+          Hours:
           </Typography>
+        {hours ? <Box>
           <Box>
-            {hours ? <ListTimes hours={hours} /> : null}
+            <ListTimes hours={hours} />
           </Box>
-        </Box>
+          
+        </Box> :
+          <Box mb={5}>
+            <Typography>Visit the website to view hours of operation.</Typography>
+          </Box>
+        }
         <Box mb={5}>
           <Typography variant="h5" component="h3">
             Address:
