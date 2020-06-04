@@ -1,3 +1,6 @@
+require('dotenv').config({
+  path: require('path').join(__dirname, '../.env.test')
+})
 const db = require('../server/knex');
 const endpoints = require('../restaurants/restaurants.controller')
 const chai = require("chai")
@@ -12,7 +15,6 @@ const mockRequest = (mountPath) => {
   const req = {}
   req.baseUrl = mountPath
   req.path = '/'
-  req.session = {}
   req.hypermediaBase = 'https://test.host'
   return req
 }
@@ -28,10 +30,10 @@ const mockResponse = () => {
 describe('restaurant endpoints', () => {
   describe(".urlBuilder", () => {
     const API_key = process.env.GOOGLE_API_KEY
-    it.only('builds the correct url string', async () => {
+    it('builds the correct url string', async () => {
       const string = endpoints.urlBuilder('name,address', 'ABC123')
 
-      expect(string).to.eq(`http://test.host/?place_id=ABC123&fields=name,address&key=${API_key}`)
+      expect(string).to.eq(`http://test.host/maps/api/place/details/json?place_id=ABC123&fields=name,address&key=${API_key}`)
     })
   })
 
@@ -39,7 +41,9 @@ describe('restaurant endpoints', () => {
     it("makes the correct request to the api", async () => {
       const serverResponse = { some: "data" };
       const fakeInternet = nock("http://test.host")
-        .get("/?place_id=ABC123&fields=name,address&key=234DEF")
+        .log(console.log)
+        .get('/maps/api/place/details/json')
+        .query(true)
         .reply(200, serverResponse);
 
       const response = await endpoints.fetchApi("name,address", "234DEF");
@@ -48,4 +52,64 @@ describe('restaurant endpoints', () => {
       expect(response).to.deep.equal(serverResponse);
     });
   });
+
+  describe("list", () => {
+    beforeEach(() => db('restaurants').del());
+    beforeEach(async () => {
+      await db('restaurants').insert({
+        id: 1,
+        name: 'fancy restaurant',
+        place_id: 'id1'
+      })
+      req = mockRequest('/restaurants');
+      res = mockResponse();
+    })
+    let restaurantsDetails;
+    beforeEach(() => restaurantsDetails = sinon.stub(endpoints, "fetchApi"))
+    afterEach(() => restaurantsDetails.restore())
+    it('returns a serialized list of detailed restaurants', async () => {
+      const serverResponse = {
+        "result": {
+          "name": "Fancy Restaurant",
+          "opening_hours": {
+            "open_now": true,
+            "weekday_text": [
+              "Monday: Closed",
+              "Tuesday: 11:00 AM – 7:00 PM",
+              "Wednesday: 11:00 AM – 7:00 PM"
+            ]
+          },
+          "rating": 4.8
+        },
+      }
+
+      const fakeInternet = nock("http://test.host")
+        .log(console.log)
+        .get('/maps/api/place/details/json')
+        .query(true)
+        .reply(200, serverResponse);
+      restaurantsDetails.returns(serverResponse)
+      await endpoints.list(req, res)
+      expect(res.json).to.have.been.calledWith(
+        sinon.match({
+          restaurants: [
+            {
+              id: 1,
+              name: 'Fancy Restaurant',
+              address: null,
+              phoneNumber: null,
+              openNow: true,
+              hoursOfOperation: [
+                'Monday: Closed',
+                'Tuesday: 11:00 AM – 7:00 PM',
+                'Wednesday: 11:00 AM – 7:00 PM'
+              ],
+              rating: 4.8,
+              website: null
+            }
+          ]
+        })
+      )
+    })
+  })
 })
