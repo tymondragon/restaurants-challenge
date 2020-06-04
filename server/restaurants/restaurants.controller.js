@@ -1,4 +1,4 @@
-const db = require('../server/knex');
+const db = require('../knex');
 const API_URL = process.env.GOOGLE_API_URL;
 const API_KEY = process.env.GOOGLE_API_KEY;
 const fetch = require('node-fetch');
@@ -31,7 +31,7 @@ exports.list = async (req, res, next) => {
       }
       serializedRestaurants = [...serializedRestaurants, exports.serializeRestaurant(restaurant)]
     }
-console.log(serializedRestaurants, "serialiizes")
+
     res.json({ restaurants: serializedRestaurants })
   } catch (e) {
     console.log(e)
