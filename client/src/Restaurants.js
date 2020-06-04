@@ -12,11 +12,11 @@ const useStyles = makeStyles({
 function Restaurants ({ restaurants, fetchRestaurant }) {
   const classes = useStyles();
   return (
-    <ul>
+    <div>
       {restaurants.map((restaurant => {
-        return <Restaurant className={classes.card} key={restaurant.id} restaurant={restaurant} fetchRestaurant={fetchRestaurant}/>
+        return <Restaurant key={restaurant.id} restaurant={restaurant} fetchRestaurant={fetchRestaurant}/>
       }))}
-    </ul>
+    </div>
   );
 }
 

@@ -35,22 +35,22 @@ const useStyles = makeStyles({
 function RestaurantDetails ({ restaurant }) {
   console.log(restaurant)
   const classes = useStyles();
-  // const hours = restaurant.hoursOfOperation
-  const hours = [
-    "Monday: Closed",
-    "Tuesday: 11:00 AM – 7:00 PM",
-    "Wednesday: 11:00 AM – 7:00 PM"
-  ]
+  const hours = restaurant.hoursOfOperation
+  // const hours = [
+  //   "Monday: Closed",
+  //   "Tuesday: 11:00 AM – 7:00 PM",
+  //   "Wednesday: 11:00 AM – 7:00 PM"
+  // ]
 
   return (
     <Box mt={5} className={classes.root} variant="outlined" height={100}>
       <Box mb={5} p={5} display="flex" flexDirection="row">
         <Box flexGrow={1}>
           <Typography variant="h5" component="h2">
-            The Roost
+            {restaurant.name}
             </Typography>
           <Typography variant="subtitle1" component="h2">
-            Rating: 5
+            Rating: {restaurant.rating}
             </Typography>
         </Box>
         {restaurant.openNow ?
@@ -79,7 +79,7 @@ function RestaurantDetails ({ restaurant }) {
             Address:
           </Typography>
           <Typography variant="h6">
-            123 Fake Street, USA
+            {restaurant.address}
           </Typography>
         </Box>
         <Box mb={5}>
@@ -87,15 +87,12 @@ function RestaurantDetails ({ restaurant }) {
             Phone:
           </Typography>
           <Typography variant="h6">
-            (555) 555-5555
+            {restaurant.phoneNumber}
           </Typography>
         </Box>
         <Box>
           <Typography variant="h5" component="h3">
-           Website:
-          </Typography>
-          <Typography variant="h6">
-            www.place.com
+            <a href={restaurant.website} target="_blank">Website</a> 
           </Typography>
         </Box>
       </Box>

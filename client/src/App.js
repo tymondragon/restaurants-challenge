@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import './App.css';
 import Box from '@material-ui/core/box';
-import { Backdrop, Button, CircularProgress, Divider, Drawer, List, ListItem, ListItemText, Typography }from '@material-ui/core';
+import { Backdrop, Button, CircularProgress, Divider, Drawer, List, ListItem, ListItemText, Typography } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import Restaurants from './Restaurants';
 import RestaurantDetails from './RestaurantDetails';
@@ -40,7 +40,6 @@ function App () {
 
   const fetchRestaurant = async (r, e) => {
     e.preventDefault();
-    console.log(r)
     const response = await fetch(`${url}/${r.id}`);
     if (!response.ok) {
       throw new Error(`status ${response.status}`)
@@ -51,48 +50,12 @@ function App () {
     }
   };
 
-  // const handleClickOpen = () => {
-  //   setOpen(true);
-  // };
   const toggleDrawer = (event) => {
     if (event.type === 'keydown' && (event.key === 'Tab' || event.key === 'Shift')) {
       return;
     }
     setOpen(!open);
   };
-
-  // const handleClose = () => {
-  //   setRestaurant(null);
-  //   setOpen(false);
-  // };
-
-  const restaurantCard = (restaurant) => (
-    <div
-      className={classes.list}
-      role="presentation"
-      onClick={(event) => toggleDrawer(event)}
-      onKeyDown={(event) => toggleDrawer(event)}
-    >
-      <List>
-        {['Inbox', 'Starred', 'Send email', 'Drafts'].map((text, index) => (
-          <ListItem button key={text}>
-            <ListItemText primary={text} />
-          </ListItem>
-        ))}
-      </List>
-      <Divider />
-      <List>
-        {['All mail', 'Trash', 'Spam'].map((text, index) => (
-          <ListItem button key={text}>
-            {/* <ListItemIcon>{index % 2 === 0 ? <InboxIcon /> : <MailIcon />}</ListItemIcon> */}
-            <ListItemText primary={text} />
-          </ListItem>
-        ))}
-      </List>
-    </div>
-  );
-
-
 
   useEffect(() => {
     setIsFetching(true)
@@ -104,13 +67,19 @@ function App () {
     <div className="App">
       {isFetching ?
         <Backdrop>
-          <CircularProgress /> 
-        </Backdrop>:
+          <CircularProgress />
+        </Backdrop> :
         <>
           <div className="column1">
-            <Box display="flex" flexDirection="column" alignItems="flex-start">
-              <h2>Roster</h2>
-              <p>Lunch Finder</p>
+            <Box className="roster" display="flex">
+              <Box>
+                <Typography variant="h3" component="h3">
+                  Roster
+              </Typography>
+                <Typography variant="h5" component="h3">
+                  Lunch Finder
+              </Typography>
+              </Box>
             </Box>
           </div>
           <div className="column2" style={{ backgroundColor: '#bbb' }}>
@@ -118,17 +87,17 @@ function App () {
               <h2>Team Favorites</h2>
             </Box>
             <List>
-              <Restaurants restaurants={restaurants} fetchRestaurant={fetchRestaurant}/>
+              <Restaurants restaurants={restaurants} fetchRestaurant={fetchRestaurant} />
             </List>
           </div>
         </>}
       {restaurant ?
         <div>
-            <React.Fragment >
-              <Drawer anchor="right" open={open} onClose={(event) => toggleDrawer(event)}>
-                <RestaurantDetails restaurant={restaurant}/>
-              </Drawer>
-            </React.Fragment>
+          <React.Fragment >
+            <Drawer anchor="right" open={open} onClose={(event) => toggleDrawer(event)}>
+              <RestaurantDetails restaurant={restaurant} />
+            </Drawer>
+          </React.Fragment>
         </div> : <></>
       }
     </div>
