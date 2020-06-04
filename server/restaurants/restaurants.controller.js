@@ -41,7 +41,6 @@ exports.list = async (req, res, next) => {
 exports.getRestaurantById = async (req, res, next) => {
   try {
     let [restaurant] = await db('restaurants').select('id','place_id').where('id', req.params.restaurantId);
-    // await console.log(restaurant)
     const json = await exports.fetchApi(fields.join(","), restaurant.place_id)
     restaurant = {
       ...restaurant,

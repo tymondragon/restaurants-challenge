@@ -4,15 +4,9 @@ import { makeStyles } from '@material-ui/core/styles';
 import {
   Box,
   Card,
-  CardActions,
   CardContent,
-  List,
-  ListItem,
-  ListItemIcon,
-  ListItemText,
   Typography
 } from '@material-ui/core';
-import { alignItems, alignSelf, flexbox, flexDirection, flexGrow, height, justifyContent, sizing, minHeight } from '@material-ui/system';
 import FiberManualRecordIcon from '@material-ui/icons/FiberManualRecord';
 
 const useStyles = makeStyles({
