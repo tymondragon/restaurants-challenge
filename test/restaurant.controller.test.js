@@ -2,7 +2,7 @@ require('dotenv').config({
   path: require('path').join(__dirname, '../.env.test')
 })
 const db = require('../server/knex');
-const endpoints = require('../restaurants/restaurants.controller')
+const endpoints = require('../server/restaurants/restaurants.controller')
 const chai = require("chai")
 const sinonChai = require("sinon-chai")
 chai.use(sinonChai)
