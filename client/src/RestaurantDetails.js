@@ -41,7 +41,7 @@ function RestaurantDetails ({ restaurant }) {
             Rating: {restaurant.rating}
           </Typography>
         </Box>
-        {true === true?
+        {restaurant.openNow ?
           <Box display="flex" alignItems="center" width="30%">
             <FiberManualRecordIcon className={classes.open} />
             <Typography variant="h6" fontWeight="fontWeightBold" className={classes.space}>Open For Luch!</Typography>
