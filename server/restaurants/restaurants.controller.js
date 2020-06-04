@@ -6,7 +6,8 @@ const fetch = require('node-fetch');
 const restaurantFields = {
   name: 'name',
   rating: 'rating',
-  hoursOfOperation: 'opening_hours/weekday_text',
+  hoursOfOperationTextText: 'opening_hours/weekday_text',
+  hoursOfOperationPeriods: 'opening_hours/periods',
   openNow: 'opening_hours/open_now',
   address: 'formatted_address',
   phoneNumber: 'formatted_phone_number',
@@ -19,18 +20,31 @@ exports.list = async (req, res, next) => {
   try {
     let restaurants = await db('restaurants').select('id', 'place_id');
 
-    const { name, rating, hoursOfOperation, openNow, ...rest } = restaurantFields;
-    const listFields = [name, rating, hoursOfOperation, openNow];
+    const { name, rating, hoursOfOperationPeriods, openNow, ...rest } = restaurantFields;
+    const listFields = [name, rating, hoursOfOperationPeriods, openNow];
 
     let serializedRestaurants = []
     for (let restaurant of restaurants) {
       const json = await exports.fetchApi(listFields.join(","), restaurant.place_id)
+      //json.result..opening_hours.periods
+      // json["result"]["opening_hours"]["periods"] = exports.dayOfOperationFormatter(json["result"]["opening_hours"]["periods"]);
       restaurant = {
         ...restaurant,
         ...json.result
       }
-      serializedRestaurants = [...serializedRestaurants, exports.serializeRestaurant(restaurant)]
+      if (json.result.opening_hours) {
+        const newRestaurant = {
+          ...restaurant,
+          ["opening_hours"]: {
+            ...restaurant["opening_hours"],
+            ["periods"]: exports.dayOfOperationFormatter([ ...restaurant["opening_hours"]["periods"]])
+          }
+        }
+        console.log(newRestaurant, "NEW");
+      }
+      serializedRestaurants = [...serializedRestaurants, exports.serializeRestaurantForList(newRestaurant)];
     }
+    
     serializedRestaurants.sort((a,b) => b.rating - a.rating)
     res.json({ restaurants: serializedRestaurants })
   } catch (e) {
@@ -56,11 +70,70 @@ exports.getRestaurantById = async (req, res, next) => {
 exports.fetchApi = async (fields, place_id) => {
   const url = exports.urlBuilder(fields, place_id);
   const response = await fetch(url);
+  // await console.log(response.json())
   return await response.json();
 }
 
 exports.urlBuilder = (fields, place_id) => {
   return `${API_URL}/maps/api/place/details/json?place_id=${place_id}&fields=${fields}&key=${API_KEY}`
+}
+
+exports.dayOfOperationFormatter = (periods) => {
+  console.log(periods)
+  // let week = ["Su", "M", "T", "W", "Th", "F", "Sat"]
+  // let closedDays = [];
+
+  // if (periods.length !== week.length) {
+  //   const dayNumbers = periods.map(day => day.close.day)
+  //   closedDays = week.filter((day, i) => !dayNumbers.includes(i))
+  // }
+
+  // const hoursOfOP = periods.reduce((times, day) => {
+  //   const time = `${day.open.time}-${day.close.time}`;
+  //   times[time] = times[time] || []
+  //   times[time].push(week[day.close.day])
+  //   return times
+  // }, {})
+
+  // if (closedDays.length) {
+  //   hoursOfOP["Closed"] = closedDays
+  // }
+  // let dayOfWeeks = [];
+  // for (let [hours, days] of Object.entries(hoursOfOP)) {
+  //   const splitHours = hours.split("-");
+  //   const truncHours = splitHours.map(hour => {
+  //     if (!isNaN(parseInt(hour, 10))) {
+  //       return moment(hour, 'H').format('h a')
+  //     } else return hour
+  //   })
+
+  //   const d = days.join(", ");
+  //   dayOfWeeks.push(`${truncHours.join(" - ")} ${d}`);
+  // }
+  // console.log(dayOfWeeks)
+  return periods;
+}
+  
+exports.serializeRestaurantForList = (
+  {
+    id,
+    name,
+    opening_hours,
+    rating,
+    formatted_address,
+    formatted_phone_number,
+    website
+  }) => {
+  return {
+    id: id ? id : null,
+    name: name ? name : null,
+    openNow: opening_hours ? opening_hours["open_now"] : null,
+    hoursOfOperationText: opening_hours ? opening_hours["periods"] : null,
+    rating: rating ? rating : null,
+    address: formatted_address ? formatted_address : null,
+    phoneNumber: formatted_phone_number ? formatted_phone_number : null,
+    website: website ? website : null
+  }
 }
 
 exports.serializeRestaurant = (
@@ -77,7 +150,7 @@ exports.serializeRestaurant = (
     id: id ? id : null,
     name: name ? name : null,
     openNow: opening_hours ? opening_hours["open_now"] : null,
-    hoursOfOperation: opening_hours ? opening_hours["weekday_text"] : null,
+    hoursOfOperationText: opening_hours ? opening_hours["weekday_text"] : null,
     rating: rating ? rating : null,
     address: formatted_address ? formatted_address : null,
     phoneNumber: formatted_phone_number ? formatted_phone_number : null,
