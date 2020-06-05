@@ -27,8 +27,8 @@ const useStyles = makeStyles({
 
 function RestaurantDetails ({ restaurant }) {
   const classes = useStyles();
-  const hours = restaurant.hoursOfOperation
-
+  const hours = restaurant.hoursOfOperationText
+  console.log(restaurant, "in res comp")
 
   return (
     <Box mt={5} className={classes.root} variant="outlined" height={100}>

@@ -7,7 +7,7 @@ const moment = require('moment');
 const restaurantFields = {
   name: 'name',
   rating: 'rating',
-  hoursOfOperationTextText: 'opening_hours/weekday_text',
+  hoursOfOperationText: 'opening_hours/weekday_text',
   hoursOfOperationPeriods: 'opening_hours/periods',
   openNow: 'opening_hours/open_now',
   address: 'formatted_address',
@@ -65,6 +65,7 @@ exports.getRestaurantById = async (req, res, next) => {
     }
     res.json(exports.serializeRestaurant(restaurant))
   } catch (e) {
+   
     next(e)
   }
 }
@@ -129,7 +130,7 @@ exports.serializeRestaurantForList = (
     id: id ? id : null,
     name: name ? name : null,
     openNow: opening_hours ? opening_hours["open_now"] : null,
-    hoursOfOperation: opening_hours ? opening_hours["periods"] : null,
+    hoursOfOperationPeriods: opening_hours ? opening_hours["periods"] : null,
     rating: rating ? rating : null,
     address: formatted_address ? formatted_address : null,
     phoneNumber: formatted_phone_number ? formatted_phone_number : null,

@@ -73,10 +73,17 @@ describe('restaurant endpoints', () => {
           "name": "Fancy Restaurant",
           "opening_hours": {
             "open_now": true,
-            "weekday_text": [
-              "Monday: Closed",
-              "Tuesday: 11:00 AM – 7:00 PM",
-              "Wednesday: 11:00 AM – 7:00 PM"
+            "periods": [
+              {
+                "close": {
+                  "day": 2,
+                  "time": "2100"
+                },
+                "open": {
+                  "day": 2,
+                  "time": "1100"
+                }
+              }
             ]
           },
           "rating": 4.8
@@ -99,11 +106,7 @@ describe('restaurant endpoints', () => {
               address: null,
               phoneNumber: null,
               openNow: true,
-              hoursOfOperation: [
-                'Monday: Closed',
-                'Tuesday: 11:00 AM – 7:00 PM',
-                'Wednesday: 11:00 AM – 7:00 PM'
-              ],
+              hoursOfOperationPeriods: ["11 am - 9 pm T", "Closed Su, M, W, Th, F, Sat"],
               rating: 4.8,
               website: null
             }
@@ -151,7 +154,7 @@ describe('restaurant endpoints', () => {
               address: null,
               phoneNumber: null,
               openNow: true,
-              hoursOfOperation: [
+              hoursOfOperationText: [
                 'Monday: Closed',
                 'Tuesday: 11:00 AM – 7:00 PM',
                 'Wednesday: 11:00 AM – 7:00 PM'
