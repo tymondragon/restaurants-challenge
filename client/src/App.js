@@ -20,6 +20,7 @@ function App () {
         throw new Error(`status ${response.status}`)
       } else {
         const data = await response.json()
+        console.log(data)
         setRestaurants(data.restaurants)
         setIsFetching(false);
       }

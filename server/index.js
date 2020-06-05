@@ -19,7 +19,12 @@ app.use((req, res, next) => {
 });
 
 app.use((err, req, res, next) => {
-  res.status(err.status).json({ error: err })
+  console.log(err)
+  const message = err.message;
+  const details = req.app.get('env') === 'development' ? err : {};
+
+  res.status(err.status || 500);
+  res.json({ error: { message, details } });
 });
 
 app.listen(PORT, listener);

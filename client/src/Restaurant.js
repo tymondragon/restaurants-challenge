@@ -35,6 +35,7 @@ const useStyles = makeStyles({
 function Restaurant ({ restaurant, fetchRestaurant } ) {
   const classes = useStyles();
   const hours = restaurant.hoursOfOperation
+  console.log(hours, "in res comp")
   return (
     <Card className={classes.root} variant="outlined" onClick={(event) => fetchRestaurant(restaurant, event)} >
       <CardContent>

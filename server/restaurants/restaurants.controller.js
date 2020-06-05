@@ -2,6 +2,7 @@ const db = require('../knex');
 const API_URL = process.env.GOOGLE_API_URL;
 const API_KEY = process.env.GOOGLE_API_KEY;
 const fetch = require('node-fetch');
+const moment = require('moment');
 
 const restaurantFields = {
   name: 'name',
@@ -24,6 +25,7 @@ exports.list = async (req, res, next) => {
     const listFields = [name, rating, hoursOfOperationPeriods, openNow];
 
     let serializedRestaurants = []
+    let newRestaurant;
     for (let restaurant of restaurants) {
       const json = await exports.fetchApi(listFields.join(","), restaurant.place_id)
       //json.result..opening_hours.periods
@@ -33,19 +35,20 @@ exports.list = async (req, res, next) => {
         ...json.result
       }
       if (json.result.opening_hours) {
-        const newRestaurant = {
+       newRestaurant = {
           ...restaurant,
           ["opening_hours"]: {
             ...restaurant["opening_hours"],
             ["periods"]: exports.dayOfOperationFormatter([ ...restaurant["opening_hours"]["periods"]])
           }
         }
-        console.log(newRestaurant, "NEW");
+        // console.log(newRestaurant, "NEW");
       }
       serializedRestaurants = [...serializedRestaurants, exports.serializeRestaurantForList(newRestaurant)];
     }
     
-    serializedRestaurants.sort((a,b) => b.rating - a.rating)
+    serializedRestaurants.sort((a, b) => b.rating - a.rating)
+    // console.log(serializedRestaurants, "in list")
     res.json({ restaurants: serializedRestaurants })
   } catch (e) {
     next(e)
@@ -62,7 +65,6 @@ exports.getRestaurantById = async (req, res, next) => {
     }
     res.json(exports.serializeRestaurant(restaurant))
   } catch (e) {
-    console.log(e)
     next(e)
   }
 }
@@ -79,39 +81,37 @@ exports.urlBuilder = (fields, place_id) => {
 }
 
 exports.dayOfOperationFormatter = (periods) => {
-  console.log(periods)
-  // let week = ["Su", "M", "T", "W", "Th", "F", "Sat"]
-  // let closedDays = [];
+  let week = ["Su", "M", "T", "W", "Th", "F", "Sat"]
+  let closedDays = [];
 
-  // if (periods.length !== week.length) {
-  //   const dayNumbers = periods.map(day => day.close.day)
-  //   closedDays = week.filter((day, i) => !dayNumbers.includes(i))
-  // }
+  if (periods.length !== week.length) {
+    const dayNumbers = periods.map(day => day.close.day)
+    closedDays = week.filter((day, i) => !dayNumbers.includes(i))
+  }
 
-  // const hoursOfOP = periods.reduce((times, day) => {
-  //   const time = `${day.open.time}-${day.close.time}`;
-  //   times[time] = times[time] || []
-  //   times[time].push(week[day.close.day])
-  //   return times
-  // }, {})
+  const hoursOfOP = periods.reduce((times, day) => {
+    const time = `${day.open.time}-${day.close.time}`;
+    times[time] = times[time] || []
+    times[time].push(week[day.close.day])
+    return times
+  }, {})
 
-  // if (closedDays.length) {
-  //   hoursOfOP["Closed"] = closedDays
-  // }
-  // let dayOfWeeks = [];
-  // for (let [hours, days] of Object.entries(hoursOfOP)) {
-  //   const splitHours = hours.split("-");
-  //   const truncHours = splitHours.map(hour => {
-  //     if (!isNaN(parseInt(hour, 10))) {
-  //       return moment(hour, 'H').format('h a')
-  //     } else return hour
-  //   })
+  if (closedDays.length) {
+    hoursOfOP["Closed"] = closedDays
+  }
+  let dayOfWeeks = [];
+  for (let [hours, days] of Object.entries(hoursOfOP)) {
+    const splitHours = hours.split("-");
+    const truncHours = splitHours.map(hour => {
+      if (!isNaN(parseInt(hour, 10))) {
+        return moment(hour, 'H').format('h a')
+      } else return hour
+    })
 
-  //   const d = days.join(", ");
-  //   dayOfWeeks.push(`${truncHours.join(" - ")} ${d}`);
-  // }
-  // console.log(dayOfWeeks)
-  return periods;
+    const d = days.join(", ");
+    dayOfWeeks.push(`${truncHours.join(" - ")} ${d}`);
+  }
+  return dayOfWeeks;
 }
   
 exports.serializeRestaurantForList = (
@@ -124,11 +124,12 @@ exports.serializeRestaurantForList = (
     formatted_phone_number,
     website
   }) => {
+  console.log("-----------------\n", opening_hours)
   return {
     id: id ? id : null,
     name: name ? name : null,
     openNow: opening_hours ? opening_hours["open_now"] : null,
-    hoursOfOperationText: opening_hours ? opening_hours["periods"] : null,
+    hoursOfOperation: opening_hours ? opening_hours["periods"] : null,
     rating: rating ? rating : null,
     address: formatted_address ? formatted_address : null,
     phoneNumber: formatted_phone_number ? formatted_phone_number : null,
