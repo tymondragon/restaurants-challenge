@@ -42,13 +42,11 @@ exports.list = async (req, res, next) => {
             ["periods"]: exports.dayOfOperationFormatter([ ...restaurant["opening_hours"]["periods"]])
           }
         }
-        // console.log(newRestaurant, "NEW");
       }
       serializedRestaurants = [...serializedRestaurants, exports.serializeRestaurantForList(newRestaurant)];
     }
     
     serializedRestaurants.sort((a, b) => b.rating - a.rating)
-    // console.log(serializedRestaurants, "in list")
     res.json({ restaurants: serializedRestaurants })
   } catch (e) {
     next(e)
@@ -73,7 +71,6 @@ exports.getRestaurantById = async (req, res, next) => {
 exports.fetchApi = async (fields, place_id) => {
   const url = exports.urlBuilder(fields, place_id);
   const response = await fetch(url);
-  // await console.log(response.json())
   return await response.json();
 }
 
@@ -125,7 +122,6 @@ exports.serializeRestaurantForList = (
     formatted_phone_number,
     website
   }) => {
-  console.log("-----------------\n", opening_hours)
   return {
     id: id ? id : null,
     name: name ? name : null,
